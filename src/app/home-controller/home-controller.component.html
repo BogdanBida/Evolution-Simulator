@@ -1,0 +1,109 @@
+<section>
+  <div class="showing-box">
+    <span>Show</span>
+    <input type="checkbox" name="isShowProcess" id="" [(ngModel)]="isShowProcess">
+  </div>
+  <app-canvas [creatures]="creatures" [food]="food" *ngIf="isShowProcess"></app-canvas>
+  <nav>
+    <div class="info row">
+      <ul>
+        <li>Day: {{day}}</li>
+        <li>Step: {{step}}</li>
+        <li>Last day: {{maxDay}}</li>
+        <!-- <li>Aprox Time: {{(maxDay*dayDurationMS)/1000}}sec</li> -->
+        <li>Step delay: {{stepDelay | number: '1.0-9'}}ms</li>
+      </ul>
+      <ul>
+        <li>Creatures: {{creatures?.length}}</li>
+        <li>Food: {{food?.length}}/{{foodUnits}}</li>
+        <li>AVG Speed: {{speedAVG | number: '1.0-3'}}</li>
+      </ul>
+    </div>
+    <hr>
+    <div class="statistic">
+      <table>
+        <tr>
+          <td>Id</td>
+          <td>Name</td>
+          <td>Energy</td>
+          <td>Speed</td>
+          <!-- <td>Target</td> -->
+        </tr>
+        <tr *ngFor="let creature of creatures; let i = index">
+          <td>{{i}}</td>
+          <td>{{creature.name}}</td>
+          <td>{{creature.energy | number: '1.0-3' }}</td>
+          <td>{{creature.speed | number: '1.0-3' }}</td>
+          <!-- <td>{{creature.target?.x | number: '1.0-0'}}x {{creature.target?.y | number: '1.0-0'}}y</td> -->
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div class="row">
+      <form>
+        <div class="col">
+          <div class="row">
+            <label for="dayDurationMS">Day duration <br>{{dayDurationMS}}ms</label>
+            <input type="range" min="{{minDayDuration}}" max="{{maxDayDuration}}" step="1" name="dayDurationMS" [(ngModel)]="dayDurationMS" [disabled]="!isPause">
+          </div>
+          <div class="row">
+            <label for="creaturesStartCount">Creatures on start</label>
+            <input type="text" name="creaturesStartCount" [(ngModel)]="creaturesStartCount" [disabled]="day != 0">
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="row">
+            <label for="">Last Day</label>
+            <input type="text" name="maxDay" [(ngModel)]="maxDay" [disabled]="!isPause">
+          </div>
+          <div class="row">
+            <label for="foodUnits">Food units</label>
+            <input type="text" name="foodUnits" [(ngModel)]="foodUnits" [disabled]="!isPause">
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="row">
+      <h4 class="message">Message: {{message}}</h4>
+    </div>
+    <div class="row">
+      <button class="btn-start" (click)="start()" [disabled]="!isPause"><span>START</span></button>
+      <button class="btn-pause" (click)="pause()"><span>PAUSE</span></button>
+      <button class="btn-reset" (click)="reset()"><span>RESET</span></button>
+      <button [disabled]="day == 0" (click)="saveWorld()"><span>SAVE</span></button>
+      <div class="file-chooser">
+        <label for="worldFile" class="loadfile"> <span>LOAD</span> </label>
+        <input type="file" class="input-file" id="worldFile" name="worldFile" multiple="false" [(ngModel)]="worldFile" accept=".json" (input)="loadWorld($event.target.files)">
+        </div>
+    </div>
+  </nav>
+</section>
+<h2>Statistic</h2>
+<section class="statistic-section">
+  <span>
+    C<br>
+    O<br>
+    U<br>
+    N<br>
+    T
+  </span>
+  <div class="diagram">
+    <div *ngFor="let item of statistics; let i = index" [style.height]=" ((100/getMaxCount()) * item.creaturesCount) + '%'" class="stat-item">
+    </div>
+  </div>
+</section>
+<section class="statistic-section">
+  <span>
+    S<br>
+    P<br>
+    E<br>
+    E<br>
+    D
+  </span>
+  <div class="diagram">
+    <div *ngFor="let item of statistics; let i = index" [style.height]=" ((100/10) * item.avgSpeed) + '%'" class="stat-item">
+    </div>
+  </div>
+</section>
