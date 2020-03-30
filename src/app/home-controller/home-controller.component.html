@@ -1,4 +1,4 @@
-<section>
+<section class="main-section">
   <div class="showing-box">
     <span>Show</span>
     <input type="checkbox" name="isShowProcess" id="" [(ngModel)]="isShowProcess">
@@ -67,12 +67,12 @@
       <h4 class="message">Message: {{message}}</h4>
     </div>
     <div class="row">
-      <button class="btn-start" (click)="start()" [disabled]="!isPause"><span>START</span></button>
-      <button class="btn-pause" (click)="pause()"><span>PAUSE</span></button>
-      <button class="btn-reset" (click)="reset()"><span>RESET</span></button>
-      <button [disabled]="day == 0" (click)="saveWorld()"><span>SAVE</span></button>
+      <button class="btn-start" (click)="start()" [disabled]="!isPause"><img src="../../assets/icons/start.png" alt=""><span>START</span></button>
+      <button class="btn-pause" (click)="pause()"><img src="../../assets/icons/pause.png" alt=""><span>PAUSE</span></button>
+      <button class="btn-reset" (click)="reset()"><img src="../../assets/icons/reset.png" alt=""><span>RESET</span></button>
+      <button [disabled]="day == 0" (click)="saveWorld()"><img src="../../assets/icons/save.png" alt=""><span>SAVE</span></button>
       <div class="file-chooser">
-        <label for="worldFile" class="loadfile"> <span>LOAD</span> </label>
+        <label for="worldFile" class="loadfile"><img src="../../assets/icons/load.png" alt=""><span>LOAD</span> </label>
         <input type="file" class="input-file" id="worldFile" name="worldFile" multiple="false" accept=".json" (input)="loadWorld($event.target.files)">
         </div>
     </div>
@@ -87,5 +87,14 @@
 </section>
 <app-statistic *ngIf="isShowStatistic"></app-statistic>
 <footer>
-  <h1>EVOLUTION SIMULATOR - CREATED BY BOGDAN BIDA</h1>
+  <div class="col">
+    <span>ABOUT ME & CONTACTS</span>
+    <span>GitHub: <a href="https://github.com/BogdanBida">github.com/BogdanBida</a></span>
+    <span>Telegram: @BogdanBida</span>
+    <span>Email: bogdanbida.ua@gmail.com</span>
+  </div>
+  <div class="col">
+    <h1>EVOLUTION SIMULATOR</h1>
+    <div>CREATED BY BOGDAN BIDA</div>
+  </div>
 </footer>

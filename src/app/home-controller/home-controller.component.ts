@@ -18,7 +18,7 @@ export class HomeControllerComponent implements OnInit {
 
   @ViewChild(CanvasComponent) canvas: CanvasComponent;
   @ViewChild(StatisticComponent) statisticComponent: StatisticComponent;
-  
+
   public isShowProcess: boolean = true;
   public isShowStatistic: boolean = true;
 
@@ -26,7 +26,7 @@ export class HomeControllerComponent implements OnInit {
   private standartSizeH: number = 600;
   private idLifeLoop;
   public isPause: boolean = true;
-  
+
   public message: string = "Hello";
 
   public day: number;
@@ -36,20 +36,21 @@ export class HomeControllerComponent implements OnInit {
   public dayDurationMS = 0;
   public readonly minDayDuration: number = 0;
   public readonly maxDayDuration: number = 5000;
-  
-  
+
+
   public creatures: Creature[];
   public creaturesStartCount: number = 2;
   public food: Food[];
   public foodUnits: number = 10;
   private FOOD_VALUE: number = 80;
-  
+
   private burnoutLimit = 25;
   private energyLimit = 200;
   private koeff = 50;
-  
+
   public speedAVG: number = 0;
   public deathsPerDay: number = 0;
+  public growthPerDay: number = 0;
 
   public statistics: Statistic[] = [];
 
@@ -113,13 +114,18 @@ export class HomeControllerComponent implements OnInit {
     this.step = 0;
     this.creatures = [];
     this.food = [];
+    this.speedAVG = 0;
+    this.deathsPerDay = 0;
     this.statistics = [];
     this.submitStatistic();
+    this.message = "World was destroy";
   }
 
   public nextDay() {
+    this.message = `Growth: ${this.growthPerDay}; Deaths: ${this.deathsPerDay}`;
     this.day++;
     this.deathsPerDay = 0;
+    this.growthPerDay = 0;
     if ((this.day > this.maxDay)) {
       this.pause();
     }
@@ -132,7 +138,6 @@ export class HomeControllerComponent implements OnInit {
       }
       if (creature.energy < 5) {
         this.killCreature(creature);
-        this.deathsPerDay++;
       }
     });
     if (this.creatures.length == 0 && this.day > 1) {
@@ -144,6 +149,7 @@ export class HomeControllerComponent implements OnInit {
     statistic.creaturesCount = this.creatures.length;
     statistic.avgSpeed = this.speedAVG;
     statistic.deathsPerDay = this.deathsPerDay;
+    statistic.growth = this.growthPerDay;
     this.statistics.push(statistic);
     this.submitStatistic();
   }
@@ -180,7 +186,6 @@ export class HomeControllerComponent implements OnInit {
     }
     if (creature.energy < 1) {
       this.killCreature(creature);
-      this.deathsPerDay++;
     }
 
     if (creature.target) { // ------------------------------------------- if the creature found food
@@ -238,19 +243,21 @@ export class HomeControllerComponent implements OnInit {
       parent.energy -= 90;
       let D = 16;
       let newCreature = new Creature(
-        parent.x + Math.random()*D + D/2, // x 
-        parent.y + Math.random()*D - D/2,  // y
-        parent.speed + (Math.random() - 0.5)/2); // speed
-      
-        // newCreature.name = `${parent.name}_${Math.round(Math.random()*10)}`;
+        parent.x + Math.random() * D + D / 2, // x 
+        parent.y + Math.random() * D - D / 2,  // y
+        parent.speed + (Math.random() - 0.5) / 2); // speed
+
+      // newCreature.name = `${parent.name}_${Math.round(Math.random()*10)}`;
       newCreature.name = String(Math.round(Math.random() * 100));
-      this.creatures.push(newCreature)
+      this.creatures.push(newCreature);
+      this.growthPerDay++;
     }
   }
 
   public killCreature(creature: Creature) {
     let id = this.creatures.indexOf(creature, 0);
     this.creatures.splice(id, 1);
+    this.deathsPerDay++;
   }
 
   public saveWorld() {
@@ -264,7 +271,7 @@ export class HomeControllerComponent implements OnInit {
     world.statistics = this.statistics;
     this.jsonService.saveToJSONFile(world);
   }
-  
+
   public loadWorld(files) {
     if (files.length > 0) {
       files[0].text().then(text => {

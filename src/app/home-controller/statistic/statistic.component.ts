@@ -25,6 +25,6 @@ export class StatisticComponent  {
     this.speedChart.draw(statistics.map(t => t.avgSpeed));
     this.mortalityChart.draw(statistics.map(t => t.deathsPerDay));
     // yes! I know
-    this.growthChart.draw(statistics.map(t => t.creaturesCount - t.deathsPerDay));
+    this.growthChart.draw(statistics.map(t => t.growth));
   }
 }

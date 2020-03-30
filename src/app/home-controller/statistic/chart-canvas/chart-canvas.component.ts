@@ -14,7 +14,7 @@ export class ChartCanvasComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.nativeCanvas = this.canvas.nativeElement;
-    this.initCtx
+    this.initCtx();
   }
 
   public initCtx() {
@@ -60,12 +60,13 @@ export class ChartCanvasComponent implements AfterViewInit {
       this.ctx.lineTo(this.W, i*(workH / 4) + this.marginH);
       this.ctx.stroke();
     }
+    if (data.length == 0) return;
 
     this.ctx.strokeStyle = this.lineColor;
     for (let i = 0; i < len; i++) {
       this.ctx.beginPath();
       if (x !== null && y !== null) this.ctx.moveTo(x, y);
-      y = this.getY(data[i], MinMax[1], workH);
+      y = this.getY(data[i], MinMax[0], MinMax[1], workH);
       x = this.getX(i, step);
       this.ctx.lineTo(x, y);
       this.ctx.stroke();
@@ -82,7 +83,7 @@ export class ChartCanvasComponent implements AfterViewInit {
     if (len < 300)
       for (let i = len - 1; i >= 0; i--) {
         this.ctx.beginPath();
-        y = this.getY(data[i], MinMax[1], workH);
+        y = this.getY(data[i], MinMax[0], MinMax[1], workH);
         x = this.getX(i, step);
         this.ctx.arc(x, y, this.r, 0, Math.PI * 2);
         this.ctx.fill();
@@ -93,14 +94,16 @@ export class ChartCanvasComponent implements AfterViewInit {
     this.ctx.fillText("0", 2, this.H - 4);
     this.ctx.fillText( Number(MinMax[1].toFixed(2)), 2, 14);
     let avg = this.getAVG(data);
-    this.ctx.fillText(`AVG | ${Number(avg.toFixed(2))} =>`, this.marginW/3 + 2, this.getY(avg, MinMax[1], workH) + 4);
+    this.ctx.fillText(`AVG | ${Number(avg.toFixed(2))} =>`, this.marginW/3 + 2, this.getY(avg, MinMax[0], MinMax[1], workH) + 4);
     this.ctx.stroke();
   }
 
   private getX(i: number, step: number): number {
     return step * i + this.marginW;
   }
-  private getY(value: number, max: number, workH: number): number {
+  private getY(value: number, min:number, max: number, workH: number): number {
+    // max += min == max? 1:0;
+    max = max == 0? max+1:max;
     return workH - workH * (value / max) + this.marginH;
   }
 
