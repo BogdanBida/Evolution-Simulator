@@ -1,0 +1,65 @@
+<div class="wrapper">
+  <hr>
+  <section class="statistic-section">
+    <span>
+      P<br>
+      O<br>
+      P<br>
+      U<br>
+      L<br>
+      A<br>
+      T<br>
+      I<br>
+      O<br>
+      N
+    </span>
+    <div class="diagram">
+      <div class="mark">POPULATION</div>
+      <app-chart-canvas #count_chart [dotColor]="colorPopulation"></app-chart-canvas>
+    </div>
+  </section>
+  <section class="statistic-section">
+    <span>
+      S<br>
+      P<br>
+      E<br>
+      E<br>
+      D
+    </span>
+    <div class="diagram">
+      <div class="mark">AVG SPEED</div>
+      <app-chart-canvas #speed_chart [dotColor]="colorSpeed"></app-chart-canvas>
+    </div>
+  </section>
+  <section class="statistic-section">
+    <span>
+      M<br>
+      O<br>
+      R<br>
+      T<br>
+      A<br>
+      L<br>
+      I<br>
+      T<br>
+      Y
+    </span>
+    <div class="diagram">
+      <div class="mark">MORTALITY</div>
+      <app-chart-canvas #mortality_chart [dotColor]="colorMortality"></app-chart-canvas>
+    </div>
+  </section>
+  <section class="statistic-section">
+    <span>
+      G<br>
+      R<br>
+      O<br>
+      W<br>
+      T<br>
+      H
+    </span>
+    <div class="diagram">
+        <div class="mark">GROWTH</div>
+      <app-chart-canvas #growth_chart [dotColor]="colorGrowth"></app-chart-canvas>
+    </div>
+  </section>
+</div>

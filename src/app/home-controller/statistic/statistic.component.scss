@@ -1,0 +1,43 @@
+.wrapper {
+    box-shadow: inset 0px 3px 5px rgba(0,0,0,0.4);
+    background: radial-gradient(circle at center, white, #f0f0f0);
+    hr {
+        margin: 0;
+    }
+}
+
+.statistic-section {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    span {
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
+        color: rgb(179, 116, 0);
+        font-size: 12px;
+        line-height: 1em;
+    }
+}
+
+.diagram {
+    border: 1px solid black;
+    width: 100%;
+    height: 23vh;
+    margin: 1vh 8px;
+    display: flex;
+    * {
+        width: 100%;
+    }
+}
+
+.mark {
+    width: 50%;
+    margin-right: -100%;
+    height: 100%;
+    font-size: 15vh;
+    text-align: center;
+    color: black;
+    opacity: 0.04;
+    // position: absolute;
+}

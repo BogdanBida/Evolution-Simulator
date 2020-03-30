@@ -5,6 +5,9 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { Dot } from '../models/Dot';
 import { Statistic } from '../models/Statistic';
 import { World } from '../models/World';
+import { JsonSerializationService } from '../services/json-serialization.service';
+import { ChartCanvasComponent } from './statistic/chart-canvas/chart-canvas.component';
+import { StatisticComponent } from './statistic/statistic.component';
 
 @Component({
   selector: 'app-home-controller',
@@ -14,42 +17,43 @@ import { World } from '../models/World';
 export class HomeControllerComponent implements OnInit {
 
   @ViewChild(CanvasComponent) canvas: CanvasComponent;
-
+  @ViewChild(StatisticComponent) statisticComponent: StatisticComponent;
+  
   public isShowProcess: boolean = true;
-
-  public creatures: Creature[];
-  public food: Food[];
+  public isShowStatistic: boolean = true;
 
   private standartSizeW: number = 700;
   private standartSizeH: number = 600;
+  private idLifeLoop;
+  public isPause: boolean = true;
+  
+  public message: string = "Hello";
 
   public day: number;
   public step: number;
-  public readonly stepsPerDay: number = 200;
+  public readonly stepsPerDay: number = 100;
   public maxDay: number = 365;
-  public dayDurationMS = 1000;
+  public dayDurationMS = 0;
   public readonly minDayDuration: number = 0;
   public readonly maxDayDuration: number = 5000;
-
-  public stepDelay: number;
-
-  public message: string = "Hello";
-
-  private idLifeLoop;
-  public isPause: boolean = true;
+  
+  
+  public creatures: Creature[];
   public creaturesStartCount: number = 2;
-  public foodUnits: number = 5;
-  private FOOD_VALUE: number = 100;
-
+  public food: Food[];
+  public foodUnits: number = 10;
+  private FOOD_VALUE: number = 80;
+  
   private burnoutLimit = 25;
   private energyLimit = 200;
   private koeff = 50;
-
+  
   public speedAVG: number = 0;
+  public deathsPerDay: number = 0;
 
   public statistics: Statistic[] = [];
 
-  constructor() {
+  constructor(private jsonService: JsonSerializationService) {
     this.day = 0;
     this.step = 0;
     this.creatures = [];
@@ -64,7 +68,7 @@ export class HomeControllerComponent implements OnInit {
       let creature = new Creature(
         Math.random() * this.standartSizeW, //x 
         Math.random() * this.standartSizeH, //y
-        Math.random() * 2 + 2); // speed
+        Math.random() * 2 + 4); // speed
       creature.name = String(i);
       this.creatures.push(creature);
     }
@@ -110,40 +114,41 @@ export class HomeControllerComponent implements OnInit {
     this.creatures = [];
     this.food = [];
     this.statistics = [];
+    this.submitStatistic();
   }
 
   public nextDay() {
     this.day++;
+    this.deathsPerDay = 0;
     if ((this.day > this.maxDay)) {
       this.pause();
     }
-    this.speedAVG = 0;
 
     // next day logic
     this.creatures.forEach(creature => {
-      this.speedAVG += creature.speed / this.creatures.length;
       creature.target = null;
-
       if (creature.energy > 100) {
         this.createCreatureFrom(creature);
       }
       if (creature.energy < 5) {
         this.killCreature(creature);
+        this.deathsPerDay++;
       }
     });
-
     if (this.creatures.length == 0 && this.day > 1) {
       this.message = "World is die";
       this.pause();
     }
+    // ------------------------------------------ init statistics
     let statistic: Statistic = new Statistic();
     statistic.creaturesCount = this.creatures.length;
     statistic.avgSpeed = this.speedAVG;
+    statistic.deathsPerDay = this.deathsPerDay;
     this.statistics.push(statistic);
+    this.submitStatistic();
   }
 
   public async nextStep() {
-    let dateStart = Date.now();
     this.step++;
     if (this.step == 1) {
       if (this.day == 1) {
@@ -151,16 +156,17 @@ export class HomeControllerComponent implements OnInit {
       }
       this.initFood(this.foodUnits);
     }
+
     // step logic
+    this.speedAVG = 0;
     this.creatures.forEach(creature => {
+      this.speedAVG += creature.speed / this.creatures.length;
       this.creatureLifeLogic(creature);
     });
     if (this.step > this.stepsPerDay) {
       this.step = 0;
       this.nextDay();
     }
-    let dateEnd = Date.now();
-    this.stepDelay = dateEnd - dateStart;
   }
 
   public creatureLifeLogic(creature: Creature) {
@@ -174,6 +180,7 @@ export class HomeControllerComponent implements OnInit {
     }
     if (creature.energy < 1) {
       this.killCreature(creature);
+      this.deathsPerDay++;
     }
 
     if (creature.target) { // ------------------------------------------- if the creature found food
@@ -225,21 +232,24 @@ export class HomeControllerComponent implements OnInit {
   }
 
   public createCreatureFrom(parent: Creature) {
-    let chance = 0.9;
+    let chance = 0.5;
     if (Math.random() > (1 - chance)) {
       // --------------------------------------------- REPRODUCTION
-      parent.energy -= 80;
-      let newCreature = new Creature(parent.x, parent.y, parent.speed + Math.random() - 0.5);
-      // newCreature.name = `${parent.name}_${Math.round(Math.random()*10)}`;
+      parent.energy -= 90;
+      let D = 16;
+      let newCreature = new Creature(
+        parent.x + Math.random()*D + D/2, // x 
+        parent.y + Math.random()*D - D/2,  // y
+        parent.speed + (Math.random() - 0.5)/2); // speed
+      
+        // newCreature.name = `${parent.name}_${Math.round(Math.random()*10)}`;
       newCreature.name = String(Math.round(Math.random() * 100));
       this.creatures.push(newCreature)
-      this.message = `Last born creature! name: ${newCreature.name}`;
     }
   }
 
   public killCreature(creature: Creature) {
     let id = this.creatures.indexOf(creature, 0);
-    this.message = `${creature.name} is dead, he was number ${id}`;
     this.creatures.splice(id, 1);
   }
 
@@ -252,20 +262,10 @@ export class HomeControllerComponent implements OnInit {
     world.step = this.step;
     world.lastDay = this.maxDay;
     world.statistics = this.statistics;
-
-    let json = JSON.stringify(world);
-
-    let type = 'data:application/octet-stream;base64, ';
-    let base = btoa(json);
-    let res = type + base;
-
-    let a = document.createElement('a');
-    a.setAttribute('href', res);
-    a.setAttribute('download', 'world.json');
-    a.click();
+    this.jsonService.saveToJSONFile(world);
   }
-
-  public loadWorld(files: FileList) {
+  
+  public loadWorld(files) {
     if (files.length > 0) {
       files[0].text().then(text => {
         try {
@@ -278,6 +278,7 @@ export class HomeControllerComponent implements OnInit {
           this.maxDay = world.lastDay;
           this.statistics = world.statistics;
           this.message = "World is loaded";
+          this.submitStatistic();
         } catch (e) {
           this.message = e;
         }
@@ -287,13 +288,13 @@ export class HomeControllerComponent implements OnInit {
     }
   }
 
-  public getMaxCount() {
-    let max = this.statistics[0].creaturesCount;
-    this.statistics.forEach(t => {
-      if (t.creaturesCount > max) {
-        max = t.creaturesCount;
-      }
-    })
-    return max;
+  public async submitStatistic() {
+    if (this.statisticComponent) {
+      this.statisticComponent.take(this.statistics);
+    } else {
+      await new Promise(resolve => {
+        setTimeout(res => { this.statisticComponent.take(this.statistics) }, 0);
+      })
+    }
   }
 }

@@ -167,44 +167,24 @@ table {
 .showing-box {
   border-radius: 3px;
   border-right: 0;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
   height: 32px;
   display: flex;
   flex-direction: column;
   padding: 4px;
   padding-bottom: 8px;
-  margin-top: 8px;
+  margin: 8px;
   background-color: rgb(82, 131, 172);
   color: white;
   box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-h2 {
-    width: 100%;
-    text-align: center;
+.header-text {
+  letter-spacing: 1vw;
+  color: #202020;
 }
 
-.statistic-section {
-    align-items: center;
-    padding-left: 8px;
-}
-
-.diagram {
-    border: 1px solid black;
-    width: 100%;
-    height: 47vh;
-    margin: 1vh 8px;
-    display: flex;
-    align-items: flex-end;
-}
-
-.stat-item {
-    background-color: orange;
-    width: 99%;
-    display: flex;
-    justify-content: center;
-    margin: 0 1px;
-    white-space: nowrap;
-    color: white;
+footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
