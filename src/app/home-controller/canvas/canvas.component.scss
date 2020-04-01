@@ -1,5 +1,24 @@
+div {
+    display: flex;
+}
+
 canvas {
-    width: 700px;
+    width: 600px;
     height: 600px;
+}
+
+#canvas {
     background-color: darkolivegreen;
+    background-color: #41488d;
+}
+
+#canvas-front {
+    position: absolute;
+    z-index: 2;
+    opacity: 0.4;
+    transition: 0.2s;
+}
+
+#canvas-front:hover {
+    opacity: 1;
 }

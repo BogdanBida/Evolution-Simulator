@@ -1,8 +1,8 @@
 <section class="main-section">
-  <div class="showing-box">
-    <span>Show</span>
-    <input type="checkbox" name="isShowProcess" id="" [(ngModel)]="isShowProcess">
-  </div>
+  <label class="showing-box" for="isShowProcess">
+    <span>SHOW</span>
+    <input type="checkbox" name="isShowProcess" id="isShowProcess" [(ngModel)]="isShowProcess">
+  </label>
   <app-canvas [creatures]="creatures" [food]="food" *ngIf="isShowProcess"></app-canvas>
   <nav>
     <div class="info row">
@@ -10,6 +10,7 @@
         <li>Day: {{day}}</li>
         <li>Step: {{step}}</li>
         <li>Last day: {{maxDay}}</li>
+        <li>Day Delay: {{delay - dayDurationMS}}ms</li>
       </ul>
       <ul>
         <li>Creatures: {{creatures?.length}}</li>
@@ -22,17 +23,17 @@
       <table>
         <tr>
           <td>Id</td>
-          <td>Name</td>
+          <td>Coordinates</td>
           <td>Energy</td>
+          <td>Current Speed</td>
           <td>Speed</td>
-          <!-- <td>Target</td> -->
         </tr>
         <tr *ngFor="let creature of creatures; let i = index">
           <td>{{i}}</td>
-          <td>{{creature.name}}</td>
+          <td class="td-coordinates">{{creature.x}}x {{creature.y}}y</td>
           <td>{{creature.energy | number: '1.0-3' }}</td>
+          <td>{{creature.currentSpeed | number: '1.0-3'}}</td>
           <td>{{creature.speed | number: '1.0-3' }}</td>
-          <!-- <td>{{creature.target?.x | number: '1.0-0'}}x {{creature.target?.y | number: '1.0-0'}}y</td> -->
         </tr>
       </table>
     </div>
@@ -40,13 +41,17 @@
     <div class="row">
       <form>
         <div class="col">
-          <div class="row">
+          <div class="row" *ngIf="!instantCalk">
             <label for="dayDurationMS">Day duration <br>{{dayDurationMS}}ms</label>
             <input type="range" min="{{minDayDuration}}" max="{{maxDayDuration}}" step="1" name="dayDurationMS" [(ngModel)]="dayDurationMS" [disabled]="!isPause">
           </div>
           <div class="row">
             <label for="creaturesStartCount">Creatures on start</label>
             <input type="text" name="creaturesStartCount" [(ngModel)]="creaturesStartCount" [disabled]="day != 0">
+          </div>
+          <div class="row" *ngIf="instantCalk">
+            <label for="instantCalk">Instant calc</label>
+            <input type="checkbox" name="instantCalk" id="instantCalk" [(ngModel)]="instantCalk">
           </div>
         </div>
 
@@ -58,6 +63,10 @@
           <div class="row">
             <label for="foodUnits">Food units</label>
             <input type="text" name="foodUnits" [(ngModel)]="foodUnits" [disabled]="!isPause">
+          </div>
+          <div class="row" *ngIf="!instantCalk">
+            <label for="instantCalk">Instant calc</label>
+            <input type="checkbox" name="instantCalk" id="instantCalk" [(ngModel)]="instantCalk">
           </div>
         </div>
 
@@ -79,19 +88,23 @@
   </nav>
 </section>
 <section>
-  <div class="showing-box">
-    <span>Show</span>
-    <input type="checkbox" name="isShowStatistic" [(ngModel)]="isShowStatistic" (change)="isShowStatistic? submitStatistic():null">
-  </div>
+  <label for="isShowStatistic" class="showing-box">
+    <span>SHOW</span>
+    <input type="checkbox" name="isShowStatistic" id="isShowStatistic" [(ngModel)]="isShowStatistic" (change)="isShowStatistic? submitStatistic():null">
+  </label>
   <h2 class="header-text">STATISTIC</h2>
 </section>
 <app-statistic *ngIf="isShowStatistic"></app-statistic>
 <footer>
-  <div class="col">
-    <span>ABOUT ME & CONTACTS</span>
-    <span>GitHub: <a href="https://github.com/BogdanBida">github.com/BogdanBida</a></span>
-    <span>Telegram: @BogdanBida</span>
-    <span>Email: bogdanbida.ua@gmail.com</span>
+  <div class="row">
+    <img src="../../assets/author.jpg" alt="">
+    <div class="col list">
+      <span>ABOUT ME & CONTACTS</span>
+      <span>GitHub: <a href="https://github.com/BogdanBida">github.com/BogdanBida</a></span>
+      <span>Telegram: @Bogdan_Bida</span>
+      <span>Email: bogdanbida.ua@gmail.com</span>
+      <span>Instagram: <a href="https://www.instagram.com/bida_bogdan/">@bida_bogdan</a></span>
+    </div>
   </div>
   <div class="col">
     <h1>EVOLUTION SIMULATOR</h1>
